@@ -18,6 +18,7 @@ func GenerateToken(secret []byte) (string, error) {
 	// Set custom claims
 	claims := &JWTCustomClaims{
 		jwt.StandardClaims{
+			Id:        "1",
 			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
 		},
 	}

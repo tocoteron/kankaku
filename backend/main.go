@@ -49,7 +49,7 @@ func main() {
 	e.POST("/signup", signup(secret))
 
 	// Set GraphQL routes
-	e.POST("/graphql", graphqlHandler(), auth.TokenValidator(secret))
+	e.POST("/graphql", graphqlHandler(), auth.TokenValidator(secret), context.UserContextProvider())
 	e.GET("/playground", graphqlPlaygroundHandler("/graphql"))
 
 	// Start server
