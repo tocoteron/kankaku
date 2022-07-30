@@ -8,6 +8,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/tocoteron/kankaku/auth"
+	"github.com/tocoteron/kankaku/context"
 	"github.com/tocoteron/kankaku/graph"
 	"github.com/tocoteron/kankaku/graph/generated"
 
@@ -40,6 +41,7 @@ func main() {
 	e := echo.New()
 
 	// Set middleware
+	e.Use(context.ContextProvider())
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
@@ -51,7 +53,11 @@ func main() {
 		Claims:     &auth.JWTCustomClaims{},
 		SigningKey: secret,
 	}
-	e.POST("/graphql", echo.WrapHandler(graphqlHandler()), middleware.JWTWithConfig(jwtConfig))
+	e.POST(
+		"/graphql",
+		echo.WrapHandler(graphqlHandler()),
+		middleware.JWTWithConfig(jwtConfig),
+	)
 	e.GET("/playground", echo.WrapHandler(graphqlPlaygroundHandler("/graphql")))
 
 	// Start server
