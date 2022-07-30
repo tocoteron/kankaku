@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 type JWTCustomClaims struct {
@@ -30,6 +32,15 @@ func GenerateToken(secret []byte) (string, error) {
 	}
 
 	return t, nil
+}
+
+// Validate token
+func TokenValidator(secret []byte) echo.MiddlewareFunc {
+	jwtConfig := middleware.JWTConfig{
+		Claims:     &JWTCustomClaims{},
+		SigningKey: secret,
+	}
+	return middleware.JWTWithConfig(jwtConfig)
 }
 
 // Authenticate user by id and password

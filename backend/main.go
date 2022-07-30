@@ -49,16 +49,8 @@ func main() {
 	e.POST("/signup", signup(secret))
 
 	// Set GraphQL routes
-	jwtConfig := middleware.JWTConfig{
-		Claims:     &auth.JWTCustomClaims{},
-		SigningKey: secret,
-	}
-	e.POST(
-		"/graphql",
-		echo.WrapHandler(graphqlHandler()),
-		middleware.JWTWithConfig(jwtConfig),
-	)
-	e.GET("/playground", echo.WrapHandler(graphqlPlaygroundHandler("/graphql")))
+	e.POST("/graphql", graphqlHandler(), auth.TokenValidator(secret))
+	e.GET("/playground", graphqlPlaygroundHandler("/graphql"))
 
 	// Start server
 	serverPort := fmt.Sprintf(":%s", port)
@@ -66,17 +58,19 @@ func main() {
 }
 
 // GraphQL
-func graphqlHandler() *handler.Server {
-	return handler.NewDefaultServer(
+func graphqlHandler() echo.HandlerFunc {
+	h := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
 			generated.Config{Resolvers: &graph.Resolver{}},
 		),
 	)
+	return echo.WrapHandler(h)
 }
 
 // GraphQL playground
-func graphqlPlaygroundHandler(graphqlPath string) http.HandlerFunc {
-	return playground.Handler("GraphQL playground", graphqlPath)
+func graphqlPlaygroundHandler(graphqlPath string) echo.HandlerFunc {
+	h := playground.Handler("GraphQL playground", graphqlPath)
+	return echo.WrapHandler(h)
 }
 
 func signup(secret []byte) echo.HandlerFunc {
