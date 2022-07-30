@@ -5,19 +5,33 @@ package graph
 
 import (
 	"context"
+	"fmt"
+	"strconv"
 
 	"github.com/tocoteron/kankaku/graph/generated"
 	"github.com/tocoteron/kankaku/graph/model"
 )
 
-// CreateTodo is the resolver for the createTodo field.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	return &model.Todo{}, nil
+// Post is the resolver for the post field.
+func (r *mutationResolver) Post(ctx context.Context, content string) (*model.Post, error) {
+	return nil, nil
 }
 
-// Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	return []*model.Todo{}, nil
+// Me is the resolver for the me field.
+func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
+	uc, err := GetUserContext(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve user context: %w", err)
+	}
+
+	id := strconv.FormatUint(uc.ID, 10)
+
+	user := &model.User{
+		ID:   id,
+		Name: "User " + id,
+	}
+
+	return user, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
