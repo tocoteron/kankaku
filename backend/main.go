@@ -8,7 +8,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/tocoteron/kankaku/auth"
-	"github.com/tocoteron/kankaku/context"
 	"github.com/tocoteron/kankaku/graph"
 	"github.com/tocoteron/kankaku/graph/generated"
 
@@ -41,7 +40,6 @@ func main() {
 	e := echo.New()
 
 	// Set middleware
-	e.Use(context.ContextProvider())
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
@@ -49,7 +47,7 @@ func main() {
 	e.POST("/signup", signup(secret))
 
 	// Set GraphQL routes
-	e.POST("/graphql", graphqlHandler(), auth.TokenValidator(secret), context.UserContextProvider())
+	e.POST("/graphql", graphqlHandler(), auth.TokenValidator(secret), auth.UserContextProvider())
 	e.GET("/playground", graphqlPlaygroundHandler("/graphql"))
 
 	// Start server
@@ -90,11 +88,7 @@ func signup(secret []byte) echo.HandlerFunc {
 			return err
 		}
 
-		if !auth.Authenticate(req.ID, req.Password) {
-			return echo.ErrUnauthorized
-		}
-
-		token, err := auth.GenerateToken(secret)
+		token, err := auth.GenerateToken(0, secret)
 		if err != nil {
 			return err
 		}
