@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/tocoteron/kankaku/graph/generated"
-	"github.com/tocoteron/kankaku/graph/model"
+	"github.com/tocoteron/kankaku/infrastructure/web/graph/generated"
+	"github.com/tocoteron/kankaku/infrastructure/web/graph/model"
 )
 
 // Post is the resolver for the post field.

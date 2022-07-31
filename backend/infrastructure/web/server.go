@@ -6,9 +6,9 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/tocoteron/kankaku/graph"
-	"github.com/tocoteron/kankaku/graph/generated"
 	"github.com/tocoteron/kankaku/infrastructure/web/auth"
+	"github.com/tocoteron/kankaku/infrastructure/web/graph"
+	"github.com/tocoteron/kankaku/infrastructure/web/graph/generated"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
