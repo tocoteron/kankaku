@@ -30,12 +30,12 @@ func NewUser(id UserID, name string) (*User, error) {
 	return u, nil
 }
 
-func (u *User) Equals(other User) bool {
-	return u.EqualsID(other.id)
+func (u *User) ID() UserID {
+	return u.id
 }
 
-func (u *User) EqualsID(id UserID) bool {
-	return u.id.Equals(id)
+func (u *User) Equals(other User) bool {
+	return u.id.Equals(other.id)
 }
 
 func (u *User) Post(p post.Post) {

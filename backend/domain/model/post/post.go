@@ -24,10 +24,10 @@ func NewPost(id PostID, content string) (*Post, error) {
 	return p, nil
 }
 
-func (p *Post) Equals(other Post) bool {
-	return p.EqualsID(other.id)
+func (p *Post) ID() PostID {
+	return p.id
 }
 
-func (p *Post) EqualsID(id PostID) bool {
-	return p.id.Equals(id)
+func (p *Post) Equals(other Post) bool {
+	return p.id.Equals(other.id)
 }
