@@ -28,6 +28,10 @@ func (p *Post) ID() PostID {
 	return p.id
 }
 
+func (p *Post) Content() string {
+	return p.content
+}
+
 func (p *Post) Equals(other Post) bool {
 	return p.id.Equals(other.id)
 }

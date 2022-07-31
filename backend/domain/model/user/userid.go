@@ -10,10 +10,10 @@ func NewUserID(id string) UserID {
 	}
 }
 
-func (uid *UserID) Equals(other UserID) bool {
+func (uid UserID) Equals(other UserID) bool {
 	return uid.id == other.id
 }
 
-func (uid *UserID) String() string {
+func (uid UserID) String() string {
 	return uid.id
 }

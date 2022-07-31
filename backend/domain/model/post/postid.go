@@ -10,10 +10,10 @@ func NewPostID(id string) PostID {
 	}
 }
 
-func (pid *PostID) Equals(other PostID) bool {
+func (pid PostID) Equals(other PostID) bool {
 	return pid.id == other.id
 }
 
-func (pid *PostID) String() string {
+func (pid PostID) String() string {
 	return pid.id
 }

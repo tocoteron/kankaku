@@ -12,7 +12,7 @@ type User struct {
 	posts []post.Post
 }
 
-func NewUser(id UserID, name string) (*User, error) {
+func NewUser(id UserID, name string, posts []post.Post) (*User, error) {
 	if len(name) == 0 {
 		return nil, fmt.Errorf("name must be not empty")
 	}
@@ -24,7 +24,7 @@ func NewUser(id UserID, name string) (*User, error) {
 	u := &User{
 		id:    id,
 		name:  name,
-		posts: []post.Post{},
+		posts: posts,
 	}
 
 	return u, nil
@@ -32,6 +32,14 @@ func NewUser(id UserID, name string) (*User, error) {
 
 func (u *User) ID() UserID {
 	return u.id
+}
+
+func (u *User) Name() string {
+	return u.name
+}
+
+func (u *User) Posts() []post.Post {
+	return u.posts
 }
 
 func (u *User) Equals(other User) bool {
