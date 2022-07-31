@@ -1,4 +1,4 @@
-package graph
+package graphql
 
 // This file will be automatically regenerated based on the schema, any resolver implementations
 // will be copied through when generating and any unknown code will be moved to the end.
@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/tocoteron/kankaku/infrastructure/web/graph/generated"
-	"github.com/tocoteron/kankaku/infrastructure/web/graph/model"
+	"github.com/tocoteron/kankaku/infrastructure/web/graphql/generated"
+	"github.com/tocoteron/kankaku/infrastructure/web/graphql/model"
 )
 
 // Post is the resolver for the post field.

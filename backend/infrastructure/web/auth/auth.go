@@ -8,7 +8,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/tocoteron/kankaku/infrastructure/web/graph"
+	"github.com/tocoteron/kankaku/infrastructure/web/graphql"
 )
 
 const tokenContextKey = "token"
@@ -83,7 +83,7 @@ func UserContextProvider() echo.MiddlewareFunc {
 			}
 
 			// Set user context
-			ctx := graph.SetUserContext(c.Request().Context(), &graph.UserContext{ID: id})
+			ctx := graphql.SetUserContext(c.Request().Context(), &graphql.UserContext{ID: id})
 			c.SetRequest(c.Request().WithContext(ctx))
 
 			// Next
