@@ -1,17 +1,15 @@
-package model
+package user
 
 import (
 	"fmt"
+
+	"github.com/tocoteron/kankaku/domain/model/post"
 )
 
 type User struct {
 	id    UserID
 	name  string
-	posts []Post
-}
-
-type UserID struct {
-	id string
+	posts []post.Post
 }
 
 func NewUser(id UserID, name string) (*User, error) {
@@ -26,15 +24,20 @@ func NewUser(id UserID, name string) (*User, error) {
 	u := &User{
 		id:    id,
 		name:  name,
-		posts: []Post{},
+		posts: []post.Post{},
 	}
 
 	return u, nil
 }
 
-func (u *User) Post(p Post) {
-	if u.id == u.id {
+func (u *User) Equals(other User) bool {
+	return u.EqualsID(other.id)
+}
 
-	}
+func (u *User) EqualsID(id UserID) bool {
+	return u.id.Equals(id)
+}
+
+func (u *User) Post(p post.Post) {
 	u.posts = append(u.posts, p)
 }
