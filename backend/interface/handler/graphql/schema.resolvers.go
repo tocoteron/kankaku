@@ -8,8 +8,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/tocoteron/kankaku/infrastructure/web/graphql/generated"
-	"github.com/tocoteron/kankaku/infrastructure/web/graphql/model"
+	mycontext "github.com/tocoteron/kankaku/interface/handler/context"
+	"github.com/tocoteron/kankaku/interface/handler/graphql/generated"
+	"github.com/tocoteron/kankaku/interface/handler/graphql/model"
 )
 
 // Post is the resolver for the post field.
@@ -19,7 +20,7 @@ func (r *mutationResolver) Post(ctx context.Context, content string) (*model.Pos
 
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	uc, err := GetUserContext(ctx)
+	uc, err := mycontext.GetUserContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve user context: %w", err)
 	}
