@@ -10,6 +10,7 @@ import (
 )
 
 type UserUseCase interface {
+	CreateUser(name string) (*user.User, error)
 	GetUser(id user.UserID) (*user.User, error)
 	CreatePost(id user.UserID, content string) (*post.Post, error)
 }
@@ -24,6 +25,24 @@ func NewUserUseCase(service service.UserService, repository repository.UserRepos
 		service:    service,
 		repository: repository,
 	}
+}
+
+func (u *userUseCase) CreateUser(name string) (*user.User, error) {
+	id, err := u.repository.NextUserID()
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate user id: %w", err)
+	}
+
+	user, err := user.NewUser(*id, name, []post.Post{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user: %w", err)
+	}
+
+	if err := u.repository.Save(*user); err != nil {
+		return nil, fmt.Errorf("failed to save user: %w", err)
+	}
+
+	return user, nil
 }
 
 func (u *userUseCase) GetUser(id user.UserID) (*user.User, error) {

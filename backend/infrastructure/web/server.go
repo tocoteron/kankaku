@@ -6,12 +6,11 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/tocoteron/kankaku/domain/service"
 	"github.com/tocoteron/kankaku/infrastructure/web/auth"
+	"github.com/tocoteron/kankaku/interface/app"
 	"github.com/tocoteron/kankaku/interface/handler/graphql"
 	"github.com/tocoteron/kankaku/interface/handler/graphql/generated"
-	"github.com/tocoteron/kankaku/interface/repository"
-	"github.com/tocoteron/kankaku/usecase"
+	"github.com/tocoteron/kankaku/interface/handler/graphql/model"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -22,13 +21,15 @@ type server struct {
 }
 
 type serverConfig struct {
+	app    *app.App
 	port   string
 	secret []byte
 }
 
-func NewServer(port string, secret []byte) *server {
+func NewServer(app *app.App, port string, secret []byte) *server {
 	return &server{
 		config: serverConfig{
+			app:    app,
 			port:   port,
 			secret: secret,
 		},
@@ -44,10 +45,15 @@ func (s *server) Run() {
 	e.Use(middleware.Recover())
 
 	// Set auth routes
-	e.POST("/signup", signup(s.config.secret))
+	e.POST("/signup", signup(s.config.app, s.config.secret))
 
 	// Set GraphQL routes
-	e.POST("/graphql", graphqlHandler(), auth.TokenValidator(s.config.secret), auth.UserContextProvider())
+	e.POST(
+		"/graphql",
+		graphqlHandler(s.config.app),
+		auth.TokenValidator(s.config.secret),
+		auth.UserContextProvider(),
+	)
 	e.GET("/playground", graphqlPlaygroundHandler("/graphql"))
 
 	// Start server
@@ -56,13 +62,8 @@ func (s *server) Run() {
 }
 
 // GraphQL
-func graphqlHandler() echo.HandlerFunc {
-	userRepo := repository.NewUserInMemoryRepository()
-	userService := service.NewUserService(userRepo)
-	userUsecase := usecase.NewUserUseCase(userService, userRepo)
-
-	resolver := graphql.NewResolver(userUsecase)
-
+func graphqlHandler(app *app.App) echo.HandlerFunc {
+	resolver := graphql.NewResolver(app)
 	h := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
 			generated.Config{Resolvers: resolver},
@@ -77,14 +78,14 @@ func graphqlPlaygroundHandler(graphqlPath string) echo.HandlerFunc {
 	return echo.WrapHandler(h)
 }
 
-func signup(secret []byte) echo.HandlerFunc {
+func signup(app *app.App, secret []byte) echo.HandlerFunc {
 	type Req struct {
-		ID       string `json:"id"`
-		Password string `json:"password"`
+		Name string `json:"name"`
 	}
 
 	type Res struct {
-		Token string `json:"token"`
+		User  *model.User `json:"user"`
+		Token string      `json:"token"`
 	}
 
 	return func(c echo.Context) error {
@@ -94,11 +95,25 @@ func signup(secret []byte) echo.HandlerFunc {
 			return err
 		}
 
-		token, err := auth.GenerateToken("0", secret)
+		u, err := app.UserUseCase().CreateUser(req.Name)
 		if err != nil {
 			return err
 		}
 
-		return c.JSON(http.StatusOK, Res{Token: token})
+		token, err := auth.GenerateToken(u.ID().String(), secret)
+		if err != nil {
+			return err
+		}
+
+		user := &model.User{
+			ID:    u.ID().String(),
+			Name:  u.Name(),
+			Posts: []*model.Post{},
+		}
+
+		return c.JSON(http.StatusOK, Res{
+			User:  user,
+			Token: token,
+		})
 	}
 }

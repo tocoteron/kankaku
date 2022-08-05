@@ -20,7 +20,7 @@ func (r *mutationResolver) Post(ctx context.Context, content string) (*model.Pos
 		return nil, fmt.Errorf("failed to get user context: %w", err)
 	}
 
-	p, err := r.userUseCase.CreatePost(user.NewUserID(uc.ID), content)
+	p, err := r.app.UserUseCase().CreatePost(user.NewUserID(uc.ID), content)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create post: %w", err)
 	}
@@ -40,7 +40,7 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 		return nil, fmt.Errorf("failed to get user context: %w", err)
 	}
 
-	u, err := r.userUseCase.GetUser(user.NewUserID(uc.ID))
+	u, err := r.app.UserUseCase().GetUser(user.NewUserID(uc.ID))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}

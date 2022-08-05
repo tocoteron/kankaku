@@ -1,6 +1,8 @@
 package graphql
 
-import "github.com/tocoteron/kankaku/usecase"
+import (
+	"github.com/tocoteron/kankaku/interface/app"
+)
 
 //go:generate go run github.com/99designs/gqlgen generate
 
@@ -9,11 +11,11 @@ import "github.com/tocoteron/kankaku/usecase"
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	userUseCase usecase.UserUseCase
+	app *app.App
 }
 
-func NewResolver(userUseCase usecase.UserUseCase) *Resolver {
+func NewResolver(app *app.App) *Resolver {
 	return &Resolver{
-		userUseCase: userUseCase,
+		app: app,
 	}
 }

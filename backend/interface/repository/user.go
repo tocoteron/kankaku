@@ -9,7 +9,7 @@ import (
 )
 
 type userInMemoryRepository struct {
-	users []userDTO
+	users map[string]*userDTO
 }
 
 type userDTO struct {
@@ -25,16 +25,36 @@ type postDTO struct {
 
 func NewUserInMemoryRepository() *userInMemoryRepository {
 	return &userInMemoryRepository{
-		users: []userDTO{},
+		users: map[string]*userDTO{},
 	}
+}
+
+func (r *userInMemoryRepository) Save(user user.User) error {
+	uid := user.ID().String()
+
+	ps := []postDTO{}
+	for _, p := range user.Posts() {
+		ps = append(ps, postDTO{
+			id:      p.ID().String(),
+			content: p.Content(),
+		})
+	}
+
+	r.users[uid] = &userDTO{
+		id:    user.ID().String(),
+		name:  user.Name(),
+		posts: ps,
+	}
+
+	return nil
 }
 
 func (r *userInMemoryRepository) FindUser(id user.UserID) (*user.User, error) {
 	uid := id.String()
 
-	u, err := r.findUserByID(uid)
-	if err != nil {
-		return nil, fmt.Errorf("failed to find user (%s): %w", uid, err)
+	u, ok := r.users[uid]
+	if !ok {
+		return nil, fmt.Errorf("failed to find user (%s)", uid)
 	}
 
 	uu, err := u.mapUser()
@@ -48,9 +68,9 @@ func (r *userInMemoryRepository) FindUser(id user.UserID) (*user.User, error) {
 func (r *userInMemoryRepository) AddPost(id user.UserID, post post.Post) error {
 	uid := id.String()
 
-	u, err := r.findUserByID(uid)
-	if err != nil {
-		return fmt.Errorf("failed to find user (%s): %w", uid, err)
+	u, ok := r.users[uid]
+	if !ok {
+		return fmt.Errorf("failed to find user (%s)", uid)
 	}
 
 	u.posts = append(u.posts, postDTO{
@@ -69,16 +89,6 @@ func (r *userInMemoryRepository) NextUserID() (*user.UserID, error) {
 func (r *userInMemoryRepository) NextPostID() (*post.PostID, error) {
 	id := post.NewPostID(uuid.New().String())
 	return &id, nil
-}
-
-// Helper function to find UserDTO from in-memory DB
-func (r *userInMemoryRepository) findUserByID(id string) (*userDTO, error) {
-	for _, u := range r.users {
-		if u.id == id {
-			return &u, nil
-		}
-	}
-	return nil, fmt.Errorf("failed to find user (%s) from in-memory DB", id)
 }
 
 // Map User DTO to User domain model

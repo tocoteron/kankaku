@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/tocoteron/kankaku/infrastructure/web"
+	"github.com/tocoteron/kankaku/interface/app"
 )
 
 // Get environment var or default value
@@ -28,7 +29,10 @@ func main() {
 	port := getEnvOrDefault("PORT", "8080")
 	secret := []byte(getEnvOrPanic("SECRET"))
 
+	// Create app
+	app := app.NewTestApp()
+
 	// Start server
-	server := web.NewServer(port, secret)
+	server := web.NewServer(app, port, secret)
 	server.Run()
 }
