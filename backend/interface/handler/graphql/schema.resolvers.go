@@ -6,8 +6,8 @@ package graphql
 import (
 	"context"
 	"fmt"
-	"strconv"
 
+	"github.com/tocoteron/kankaku/domain/model/user"
 	mycontext "github.com/tocoteron/kankaku/interface/handler/context"
 	"github.com/tocoteron/kankaku/interface/handler/graphql/generated"
 	"github.com/tocoteron/kankaku/interface/handler/graphql/model"
@@ -15,21 +15,48 @@ import (
 
 // Post is the resolver for the post field.
 func (r *mutationResolver) Post(ctx context.Context, content string) (*model.Post, error) {
-	return nil, nil
+	uc, err := mycontext.GetUserContext(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user context: %w", err)
+	}
+
+	p, err := r.userUseCase.CreatePost(user.NewUserID(uc.ID), content)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create post: %w", err)
+	}
+
+	post := &model.Post{
+		ID:      p.ID().String(),
+		Content: p.Content(),
+	}
+
+	return post, nil
 }
 
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	uc, err := mycontext.GetUserContext(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve user context: %w", err)
+		return nil, fmt.Errorf("failed to get user context: %w", err)
 	}
 
-	id := strconv.FormatUint(uc.ID, 10)
+	u, err := r.userUseCase.GetUser(user.NewUserID(uc.ID))
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+
+	posts := []*model.Post{}
+	for _, p := range u.Posts() {
+		posts = append(posts, &model.Post{
+			ID:      p.ID().String(),
+			Content: p.Content(),
+		})
+	}
 
 	user := &model.User{
-		ID:   id,
-		Name: "User " + id,
+		ID:    u.ID().String(),
+		Name:  u.Name(),
+		Posts: posts,
 	}
 
 	return user, nil

@@ -2,7 +2,6 @@ package auth
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -19,7 +18,6 @@ type JWTCustomClaims struct {
 
 // Authenticate user by id and password
 func Authenticate(id string, password string) bool {
-	fmt.Println(id, password)
 	if id == "test" && password == "password" {
 		return true
 	}
@@ -27,11 +25,11 @@ func Authenticate(id string, password string) bool {
 }
 
 // Generate token to authenticate user
-func GenerateToken(id uint64, secret []byte) (string, error) {
+func GenerateToken(id string, secret []byte) (string, error) {
 	// Set custom claims
 	claims := &JWTCustomClaims{
 		jwt.StandardClaims{
-			Id:        strconv.FormatUint(id, 10),
+			Id:        id,
 			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
 		},
 	}
@@ -65,7 +63,7 @@ func UserContextProvider() echo.MiddlewareFunc {
 			// Retrieve token from context
 			jwtCtx := c.Get(tokenContextKey)
 			if jwtCtx == nil {
-				return fmt.Errorf("failed to retrieve token from context")
+				return fmt.Errorf("failed to get token from context")
 			}
 			token, ok := jwtCtx.(*jwt.Token)
 			if !ok {
@@ -76,14 +74,8 @@ func UserContextProvider() echo.MiddlewareFunc {
 				return fmt.Errorf("failed to convert jwt claims to *auth.JWTCustomClaims")
 			}
 
-			// Parse user id of token
-			id, err := strconv.ParseUint(claims.Id, 10, 64)
-			if err != nil {
-				return fmt.Errorf("failed to parse token id: %w", err)
-			}
-
 			// Set user context
-			ctx := mycontext.SetUserContext(c.Request().Context(), &mycontext.UserContext{ID: id})
+			ctx := mycontext.SetUserContext(c.Request().Context(), &mycontext.UserContext{ID: claims.Id})
 			c.SetRequest(c.Request().WithContext(ctx))
 
 			// Next

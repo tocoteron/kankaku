@@ -6,9 +6,12 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/tocoteron/kankaku/domain/service"
 	"github.com/tocoteron/kankaku/infrastructure/web/auth"
 	"github.com/tocoteron/kankaku/interface/handler/graphql"
 	"github.com/tocoteron/kankaku/interface/handler/graphql/generated"
+	"github.com/tocoteron/kankaku/interface/repository"
+	"github.com/tocoteron/kankaku/usecase"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -54,9 +57,15 @@ func (s *server) Run() {
 
 // GraphQL
 func graphqlHandler() echo.HandlerFunc {
+	userRepo := repository.NewUserInMemoryRepository()
+	userService := service.NewUserService(userRepo)
+	userUsecase := usecase.NewUserUseCase(userService, userRepo)
+
+	resolver := graphql.NewResolver(userUsecase)
+
 	h := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
-			generated.Config{Resolvers: &graphql.Resolver{}},
+			generated.Config{Resolvers: resolver},
 		),
 	)
 	return echo.WrapHandler(h)
@@ -85,7 +94,7 @@ func signup(secret []byte) echo.HandlerFunc {
 			return err
 		}
 
-		token, err := auth.GenerateToken(0, secret)
+		token, err := auth.GenerateToken("0", secret)
 		if err != nil {
 			return err
 		}

@@ -6,7 +6,7 @@ import (
 )
 
 type UserContext struct {
-	ID uint64 `json:"id"`
+	ID string `json:"id"`
 }
 
 type userContextKey struct{}
@@ -18,7 +18,7 @@ func SetUserContext(ctx context.Context, uctx *UserContext) context.Context {
 func GetUserContext(ctx context.Context) (*UserContext, error) {
 	userContext := ctx.Value(userContextKey{})
 	if userContext == nil {
-		return nil, fmt.Errorf("failed to retrieve user context")
+		return nil, fmt.Errorf("failed to get user context")
 	}
 
 	uc, ok := userContext.(*UserContext)
