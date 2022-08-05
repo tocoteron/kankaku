@@ -1,19 +1,19 @@
 package post
 
 type PostID struct {
-	id string
+	value string
 }
 
 func NewPostID(id string) PostID {
 	return PostID{
-		id: id,
+		value: id,
 	}
 }
 
 func (pid PostID) Equals(other PostID) bool {
-	return pid.id == other.id
+	return pid.value == other.value
 }
 
 func (pid PostID) String() string {
-	return pid.id
+	return pid.value
 }
