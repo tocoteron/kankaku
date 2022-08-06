@@ -1,5 +1,6 @@
 extend type Query {
-    me: User!
+  me: User!
+  user(userId: ID!): User!
 }
 
 type User {

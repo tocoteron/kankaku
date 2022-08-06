@@ -40,3 +40,27 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 
 	return user, nil
 }
+
+// User is the resolver for the user field.
+func (r *queryResolver) User(ctx context.Context, userID string) (*model.User, error) {
+	u, err := r.app.UserUseCase().GetUser(user.NewUserID(userID))
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+
+	posts := []*model.Post{}
+	for _, p := range u.Posts() {
+		posts = append(posts, &model.Post{
+			ID:      p.ID().String(),
+			Content: p.Content(),
+		})
+	}
+
+	user := &model.User{
+		ID:    u.ID().String(),
+		Name:  u.Name(),
+		Posts: posts,
+	}
+
+	return user, nil
+}
