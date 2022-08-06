@@ -8,9 +8,9 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/tocoteron/kankaku/infrastructure/web/auth"
 	"github.com/tocoteron/kankaku/interface/app"
-	"github.com/tocoteron/kankaku/interface/handler/graphql"
 	"github.com/tocoteron/kankaku/interface/handler/graphql/generated"
 	"github.com/tocoteron/kankaku/interface/handler/graphql/model"
+	"github.com/tocoteron/kankaku/interface/handler/graphql/resolver"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -63,7 +63,7 @@ func (s *server) Run() {
 
 // GraphQL
 func graphqlHandler(app *app.App) echo.HandlerFunc {
-	resolver := graphql.NewResolver(app)
+	resolver := resolver.NewResolver(app)
 	h := handler.NewDefaultServer(
 		generated.NewExecutableSchema(
 			generated.Config{Resolvers: resolver},

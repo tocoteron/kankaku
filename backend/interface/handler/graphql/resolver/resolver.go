@@ -1,4 +1,4 @@
-package graphql
+package resolver
 
 import (
 	"github.com/tocoteron/kankaku/interface/app"
