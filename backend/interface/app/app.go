@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/tocoteron/kankaku/domain/service"
-	"github.com/tocoteron/kankaku/interface/repository"
+	"github.com/tocoteron/kankaku/infrastructure/repository"
 	"github.com/tocoteron/kankaku/usecase"
 )
 
