@@ -8,7 +8,7 @@ import (
 )
 
 type UserService interface {
-	Post(id model.UserID, post model.Post) error
+	Post(user model.User, post model.Post) error
 }
 
 type userService struct {
@@ -21,9 +21,10 @@ func NewUserService(repository repository.UserRepository) *userService {
 	}
 }
 
-func (us *userService) Post(id model.UserID, post model.Post) error {
-	if err := us.repository.AddPost(id, post); err != nil {
-		return fmt.Errorf("failed to add post: %w", err)
+func (us *userService) Post(user model.User, post model.Post) error {
+	user.Post(post)
+	if err := us.repository.Save(user); err != nil {
+		return fmt.Errorf("failed to save user: %w", err)
 	}
 	return nil
 }

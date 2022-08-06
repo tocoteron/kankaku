@@ -51,19 +51,6 @@ func (r *userInMemoryRepository) Find(id model.UserID) (*model.User, error) {
 	return uu, nil
 }
 
-func (r *userInMemoryRepository) AddPost(id model.UserID, post model.Post) error {
-	uid := id.String()
-
-	u, ok := r.users[uid]
-	if !ok {
-		return fmt.Errorf("failed to find user (%s)", uid)
-	}
-
-	u.posts = append(u.posts, *fromPost(&post))
-
-	return nil
-}
-
 func (r *userInMemoryRepository) GetAllPosts() (*[]model.Post, error) {
 	ps := []model.Post{}
 	for _, u := range r.users {

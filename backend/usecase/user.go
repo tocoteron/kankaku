@@ -64,22 +64,27 @@ func (u *userUseCase) GetUserPosts(id model.UserID) (*[]model.Post, error) {
 }
 
 func (u *userUseCase) CreatePost(id model.UserID, content string) (*model.Post, error) {
+	user, err := u.repository.Find(id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find user: %w", err)
+	}
+
 	postID, err := u.repository.NextPostID()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get next post id: %w", err)
 	}
 
-	p, err := model.NewPost(*postID, id, content)
+	post, err := model.NewPost(*postID, id, content)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create new post: %w", err)
 	}
 
-	err = u.service.Post(id, *p)
+	err = u.service.Post(*user, *post)
 	if err != nil {
 		return nil, fmt.Errorf("failed to post: %w", err)
 	}
 
-	return p, nil
+	return post, nil
 }
 
 func (u *userUseCase) GetTimeline() (*[]model.Post, error) {
