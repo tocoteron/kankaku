@@ -81,6 +81,21 @@ func (r *userInMemoryRepository) AddPost(id user.UserID, post post.Post) error {
 	return nil
 }
 
+func (r *userInMemoryRepository) GetAllPosts() (*[]post.Post, error) {
+	ps := []post.Post{}
+	for _, u := range r.users {
+		for _, p := range u.posts {
+			post, err := p.mapPost()
+			if err != nil {
+				return nil, fmt.Errorf("failed to map Post DTO to Post model: %w", err)
+			}
+			ps = append(ps, *post)
+		}
+	}
+
+	return &ps, nil
+}
+
 func (r *userInMemoryRepository) NextUserID() (*user.UserID, error) {
 	id := user.NewUserID(uuid.New().String())
 	return &id, nil

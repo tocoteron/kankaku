@@ -9,6 +9,7 @@ import (
 
 	"github.com/tocoteron/kankaku/domain/model/user"
 	mycontext "github.com/tocoteron/kankaku/interface/handler/context"
+	"github.com/tocoteron/kankaku/interface/handler/graphql/generated"
 	"github.com/tocoteron/kankaku/interface/handler/graphql/model"
 )
 
@@ -24,10 +25,25 @@ func (r *mutationResolver) Post(ctx context.Context, content string) (*model.Pos
 		return nil, fmt.Errorf("failed to create post: %w", err)
 	}
 
-	post := &model.Post{
-		ID:      p.ID().String(),
-		Content: p.Content(),
+	return model.PostFrom(p), nil
+}
+
+// Author is the resolver for the author field.
+func (r *postResolver) Author(ctx context.Context, obj *model.Post) (*model.User, error) {
+	return r.Resolver.Query().User(ctx, obj.AuthorID)
+}
+
+// Timeline is the resolver for the timeline field.
+func (r *queryResolver) Timeline(ctx context.Context) ([]*model.Post, error) {
+	tl, err := r.app.UserUseCase().GetTimeline()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get timeline: %w", err)
 	}
 
-	return post, nil
+	return model.PostsFrom(tl), nil
 }
+
+// Post returns generated.PostResolver implementation.
+func (r *Resolver) Post() generated.PostResolver { return &postResolver{r} }
+
+type postResolver struct{ *Resolver }

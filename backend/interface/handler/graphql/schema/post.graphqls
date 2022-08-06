@@ -1,8 +1,13 @@
+extend type Query {
+  timeline: [Post!]!
+}
+
 extend type Mutation {
   post(content: String!): Post!
 }
 
 type Post {
   id: ID!
+  author: User!
   content: String!
 }

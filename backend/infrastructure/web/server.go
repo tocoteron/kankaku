@@ -105,14 +105,8 @@ func signup(app *app.App, secret []byte) echo.HandlerFunc {
 			return err
 		}
 
-		user := &model.User{
-			ID:    u.ID().String(),
-			Name:  u.Name(),
-			Posts: []*model.Post{},
-		}
-
 		return c.JSON(http.StatusOK, Res{
-			User:  user,
+			User:  model.UserFrom(u),
 			Token: token,
 		})
 	}

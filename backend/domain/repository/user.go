@@ -9,6 +9,7 @@ type UserRepository interface {
 	Save(user user.User) error
 	FindUser(id user.UserID) (*user.User, error)
 	AddPost(id user.UserID, post post.Post) error
+	GetAllPosts() (*[]post.Post, error)
 	NextUserID() (*user.UserID, error)
 	NextPostID() (*post.PostID, error)
 }

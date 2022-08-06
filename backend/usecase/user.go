@@ -13,6 +13,7 @@ type UserUseCase interface {
 	CreateUser(name string) (*user.User, error)
 	GetUser(id user.UserID) (*user.User, error)
 	CreatePost(id user.UserID, content string) (*post.Post, error)
+	GetTimeline() (*[]post.Post, error)
 }
 
 type userUseCase struct {
@@ -70,4 +71,13 @@ func (u *userUseCase) CreatePost(id user.UserID, content string) (*post.Post, er
 	}
 
 	return p, nil
+}
+
+func (u *userUseCase) GetTimeline() (*[]post.Post, error) {
+	ps, err := u.repository.GetAllPosts()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get all posts: %w", err)
+	}
+
+	return ps, nil
 }
