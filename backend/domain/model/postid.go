@@ -1,4 +1,4 @@
-package post
+package model
 
 type PostID struct {
 	value string

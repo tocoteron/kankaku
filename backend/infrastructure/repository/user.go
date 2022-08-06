@@ -4,8 +4,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/tocoteron/kankaku/domain/model/post"
-	"github.com/tocoteron/kankaku/domain/model/user"
+	"github.com/tocoteron/kankaku/domain/model"
 )
 
 type userInMemoryRepository struct {
@@ -19,8 +18,9 @@ type userDTO struct {
 }
 
 type postDTO struct {
-	id      string
-	content string
+	id       string
+	authorID string
+	content  string
 }
 
 func NewUserInMemoryRepository() *userInMemoryRepository {
@@ -29,27 +29,13 @@ func NewUserInMemoryRepository() *userInMemoryRepository {
 	}
 }
 
-func (r *userInMemoryRepository) Save(user user.User) error {
+func (r *userInMemoryRepository) Save(user model.User) error {
 	uid := user.ID().String()
-
-	ps := []postDTO{}
-	for _, p := range user.Posts() {
-		ps = append(ps, postDTO{
-			id:      p.ID().String(),
-			content: p.Content(),
-		})
-	}
-
-	r.users[uid] = &userDTO{
-		id:    user.ID().String(),
-		name:  user.Name(),
-		posts: ps,
-	}
-
+	r.users[uid] = fromUser(&user)
 	return nil
 }
 
-func (r *userInMemoryRepository) FindUser(id user.UserID) (*user.User, error) {
+func (r *userInMemoryRepository) Find(id model.UserID) (*model.User, error) {
 	uid := id.String()
 
 	u, ok := r.users[uid]
@@ -57,7 +43,7 @@ func (r *userInMemoryRepository) FindUser(id user.UserID) (*user.User, error) {
 		return nil, fmt.Errorf("failed to find user (%s)", uid)
 	}
 
-	uu, err := u.mapUser()
+	uu, err := u.toUser()
 	if err != nil {
 		return nil, fmt.Errorf("failed to map found User DTO to User model: %w", err)
 	}
@@ -65,7 +51,7 @@ func (r *userInMemoryRepository) FindUser(id user.UserID) (*user.User, error) {
 	return uu, nil
 }
 
-func (r *userInMemoryRepository) AddPost(id user.UserID, post post.Post) error {
+func (r *userInMemoryRepository) AddPost(id model.UserID, post model.Post) error {
 	uid := id.String()
 
 	u, ok := r.users[uid]
@@ -73,19 +59,16 @@ func (r *userInMemoryRepository) AddPost(id user.UserID, post post.Post) error {
 		return fmt.Errorf("failed to find user (%s)", uid)
 	}
 
-	u.posts = append(u.posts, postDTO{
-		id:      post.ID().String(),
-		content: post.Content(),
-	})
+	u.posts = append(u.posts, *fromPost(&post))
 
 	return nil
 }
 
-func (r *userInMemoryRepository) GetAllPosts() (*[]post.Post, error) {
-	ps := []post.Post{}
+func (r *userInMemoryRepository) GetAllPosts() (*[]model.Post, error) {
+	ps := []model.Post{}
 	for _, u := range r.users {
 		for _, p := range u.posts {
-			post, err := p.mapPost()
+			post, err := p.toPost()
 			if err != nil {
 				return nil, fmt.Errorf("failed to map Post DTO to Post model: %w", err)
 			}
@@ -96,30 +79,30 @@ func (r *userInMemoryRepository) GetAllPosts() (*[]post.Post, error) {
 	return &ps, nil
 }
 
-func (r *userInMemoryRepository) NextUserID() (*user.UserID, error) {
-	id := user.NewUserID(uuid.New().String())
+func (r *userInMemoryRepository) NextUserID() (*model.UserID, error) {
+	id := model.NewUserID(uuid.New().String())
 	return &id, nil
 }
 
-func (r *userInMemoryRepository) NextPostID() (*post.PostID, error) {
-	id := post.NewPostID(uuid.New().String())
+func (r *userInMemoryRepository) NextPostID() (*model.PostID, error) {
+	id := model.NewPostID(uuid.New().String())
 	return &id, nil
 }
 
 // Map User DTO to User domain model
-func (udto *userDTO) mapUser() (*user.User, error) {
-	id := user.NewUserID(udto.id)
+func (udto *userDTO) toUser() (*model.User, error) {
+	id := model.NewUserID(udto.id)
 
-	posts := []post.Post{}
+	posts := []model.Post{}
 	for _, p := range udto.posts {
-		pp, err := p.mapPost()
+		pp, err := p.toPost()
 		if err != nil {
 			return nil, fmt.Errorf("failed to map Post DTO to Post model: %w", err)
 		}
 		posts = append(posts, *pp)
 	}
 
-	u, err := user.NewUser(id, udto.name, posts)
+	u, err := model.NewUser(id, udto.name, posts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create User model from User DTO: %w", err)
 	}
@@ -128,11 +111,37 @@ func (udto *userDTO) mapUser() (*user.User, error) {
 }
 
 // Map Post DTO to Post domain model
-func (pdto *postDTO) mapPost() (*post.Post, error) {
-	id := post.NewPostID(pdto.id)
-	p, err := post.NewPost(id, pdto.content)
+func (pdto *postDTO) toPost() (*model.Post, error) {
+	id := model.NewPostID(pdto.id)
+	authorID := model.NewUserID(pdto.authorID)
+
+	p, err := model.NewPost(id, authorID, pdto.content)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Post model from Post DTO: %w", err)
 	}
+
 	return p, nil
+}
+
+// Map User domain model to User DTO
+func fromUser(user *model.User) *userDTO {
+	ps := []postDTO{}
+	for _, p := range user.Posts() {
+		ps = append(ps, *fromPost(&p))
+	}
+
+	return &userDTO{
+		id:    user.ID().String(),
+		name:  user.Name(),
+		posts: ps,
+	}
+}
+
+// Map Post domain model to Post DTO
+func fromPost(post *model.Post) *postDTO {
+	return &postDTO{
+		id:       post.ID().String(),
+		authorID: post.AuthorID().String(),
+		content:  post.Content(),
+	}
 }

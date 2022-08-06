@@ -1,18 +1,14 @@
-package user
+package model
 
-import (
-	"fmt"
-
-	"github.com/tocoteron/kankaku/domain/model/post"
-)
+import "fmt"
 
 type User struct {
 	id    UserID
 	name  string
-	posts []post.Post
+	posts []Post
 }
 
-func NewUser(id UserID, name string, posts []post.Post) (*User, error) {
+func NewUser(id UserID, name string, posts []Post) (*User, error) {
 	if len(name) == 0 {
 		return nil, fmt.Errorf("name must be not empty")
 	}
@@ -38,7 +34,7 @@ func (u *User) Name() string {
 	return u.name
 }
 
-func (u *User) Posts() []post.Post {
+func (u *User) Posts() []Post {
 	return u.posts
 }
 
@@ -46,6 +42,6 @@ func (u *User) Equals(other User) bool {
 	return u.id.Equals(other.id)
 }
 
-func (u *User) Post(p post.Post) {
+func (u *User) Post(p Post) {
 	u.posts = append(u.posts, p)
 }

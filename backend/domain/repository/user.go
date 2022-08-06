@@ -1,15 +1,14 @@
 package repository
 
 import (
-	"github.com/tocoteron/kankaku/domain/model/post"
-	"github.com/tocoteron/kankaku/domain/model/user"
+	"github.com/tocoteron/kankaku/domain/model"
 )
 
 type UserRepository interface {
-	Save(user user.User) error
-	FindUser(id user.UserID) (*user.User, error)
-	AddPost(id user.UserID, post post.Post) error
-	GetAllPosts() (*[]post.Post, error)
-	NextUserID() (*user.UserID, error)
-	NextPostID() (*post.PostID, error)
+	Save(user model.User) error
+	Find(id model.UserID) (*model.User, error)
+	AddPost(id model.UserID, post model.Post) error
+	GetAllPosts() (*[]model.Post, error)
+	NextUserID() (*model.UserID, error)
+	NextPostID() (*model.PostID, error)
 }

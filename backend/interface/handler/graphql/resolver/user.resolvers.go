@@ -7,44 +7,44 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/tocoteron/kankaku/domain/model/user"
+	"github.com/tocoteron/kankaku/domain/model"
 	mycontext "github.com/tocoteron/kankaku/interface/handler/context"
 	"github.com/tocoteron/kankaku/interface/handler/graphql/generated"
-	"github.com/tocoteron/kankaku/interface/handler/graphql/model"
+	dto "github.com/tocoteron/kankaku/interface/handler/graphql/model"
 )
 
 // Me is the resolver for the me field.
-func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
+func (r *queryResolver) Me(ctx context.Context) (*dto.User, error) {
 	uc, err := mycontext.GetUserContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user context: %w", err)
 	}
 
-	u, err := r.app.UserUseCase().GetUser(user.NewUserID(uc.ID))
+	u, err := r.app.UserUseCase().GetUser(model.NewUserID(uc.ID))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
-	return model.UserFrom(u), nil
+	return dto.UserFrom(u), nil
 }
 
 // User is the resolver for the user field.
-func (r *queryResolver) User(ctx context.Context, userID string) (*model.User, error) {
-	u, err := r.app.UserUseCase().GetUser(user.NewUserID(userID))
+func (r *queryResolver) User(ctx context.Context, userID string) (*dto.User, error) {
+	u, err := r.app.UserUseCase().GetUser(model.NewUserID(userID))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
-	return model.UserFrom(u), nil
+	return dto.UserFrom(u), nil
 }
 
 // Posts is the resolver for the posts field.
-func (r *userResolver) Posts(ctx context.Context, obj *model.User) ([]*model.Post, error) {
-	ps, err := r.app.UserUseCase().GetUserPosts(user.NewUserID(obj.ID))
+func (r *userResolver) Posts(ctx context.Context, obj *dto.User) ([]*dto.Post, error) {
+	ps, err := r.app.UserUseCase().GetUserPosts(model.NewUserID(obj.ID))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
-	return model.PostsFrom(ps), nil
+	return dto.PostsFrom(ps), nil
 }
 
 // User returns generated.UserResolver implementation.

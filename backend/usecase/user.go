@@ -3,18 +3,17 @@ package usecase
 import (
 	"fmt"
 
-	"github.com/tocoteron/kankaku/domain/model/post"
-	"github.com/tocoteron/kankaku/domain/model/user"
+	"github.com/tocoteron/kankaku/domain/model"
 	"github.com/tocoteron/kankaku/domain/repository"
 	"github.com/tocoteron/kankaku/domain/service"
 )
 
 type UserUseCase interface {
-	CreateUser(name string) (*user.User, error)
-	GetUser(id user.UserID) (*user.User, error)
-	GetUserPosts(id user.UserID) (*[]post.Post, error)
-	CreatePost(id user.UserID, content string) (*post.Post, error)
-	GetTimeline() (*[]post.Post, error)
+	CreateUser(name string) (*model.User, error)
+	GetUser(id model.UserID) (*model.User, error)
+	GetUserPosts(id model.UserID) (*[]model.Post, error)
+	CreatePost(id model.UserID, content string) (*model.Post, error)
+	GetTimeline() (*[]model.Post, error)
 }
 
 type userUseCase struct {
@@ -29,13 +28,13 @@ func NewUserUseCase(service service.UserService, repository repository.UserRepos
 	}
 }
 
-func (u *userUseCase) CreateUser(name string) (*user.User, error) {
+func (u *userUseCase) CreateUser(name string) (*model.User, error) {
 	id, err := u.repository.NextUserID()
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate user id: %w", err)
 	}
 
-	user, err := user.NewUser(*id, name, []post.Post{})
+	user, err := model.NewUser(*id, name, []model.Post{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
@@ -47,16 +46,16 @@ func (u *userUseCase) CreateUser(name string) (*user.User, error) {
 	return user, nil
 }
 
-func (u *userUseCase) GetUser(id user.UserID) (*user.User, error) {
-	user, err := u.repository.FindUser(id)
+func (u *userUseCase) GetUser(id model.UserID) (*model.User, error) {
+	user, err := u.repository.Find(id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 	return user, nil
 }
 
-func (u *userUseCase) GetUserPosts(id user.UserID) (*[]post.Post, error) {
-	user, err := u.repository.FindUser(id)
+func (u *userUseCase) GetUserPosts(id model.UserID) (*[]model.Post, error) {
+	user, err := u.repository.Find(id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
@@ -64,13 +63,13 @@ func (u *userUseCase) GetUserPosts(id user.UserID) (*[]post.Post, error) {
 	return &ps, nil
 }
 
-func (u *userUseCase) CreatePost(id user.UserID, content string) (*post.Post, error) {
+func (u *userUseCase) CreatePost(id model.UserID, content string) (*model.Post, error) {
 	postID, err := u.repository.NextPostID()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get next post id: %w", err)
 	}
 
-	p, err := post.NewPost(*postID, content)
+	p, err := model.NewPost(*postID, id, content)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create new post: %w", err)
 	}
@@ -83,7 +82,7 @@ func (u *userUseCase) CreatePost(id user.UserID, content string) (*post.Post, er
 	return p, nil
 }
 
-func (u *userUseCase) GetTimeline() (*[]post.Post, error) {
+func (u *userUseCase) GetTimeline() (*[]model.Post, error) {
 	ps, err := u.repository.GetAllPosts()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all posts: %w", err)
