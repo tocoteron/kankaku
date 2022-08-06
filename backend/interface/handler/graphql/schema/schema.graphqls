@@ -2,21 +2,6 @@
 #
 # https://gqlgen.com/getting-started/
 
-type User {
-  id: ID!
-  name: String!
-  posts: [Post!]!
-}
 
-type Post {
-  id: ID!
-  content: String!
-}
-
-type Query {
-  me: User!
-}
-
-type Mutation {
-  post(content: String!): Post!
-}
+type Query
+type Mutation

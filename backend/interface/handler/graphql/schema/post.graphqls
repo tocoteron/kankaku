@@ -1,0 +1,8 @@
+extend type Mutation {
+  post(content: String!): Post!
+}
+
+type Post {
+  id: ID!
+  content: String!
+}
