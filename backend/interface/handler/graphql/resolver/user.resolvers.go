@@ -40,12 +40,11 @@ func (r *queryResolver) User(ctx context.Context, userID string) (*model.User, e
 
 // Posts is the resolver for the posts field.
 func (r *userResolver) Posts(ctx context.Context, obj *model.User) ([]*model.Post, error) {
-	u, err := r.app.UserUseCase().GetUser(user.NewUserID(obj.ID))
+	ps, err := r.app.UserUseCase().GetUserPosts(user.NewUserID(obj.ID))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
-	ps := u.Posts()
-	return model.PostsFrom(&ps), nil
+	return model.PostsFrom(ps), nil
 }
 
 // User returns generated.UserResolver implementation.

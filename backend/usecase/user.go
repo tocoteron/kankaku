@@ -12,6 +12,7 @@ import (
 type UserUseCase interface {
 	CreateUser(name string) (*user.User, error)
 	GetUser(id user.UserID) (*user.User, error)
+	GetUserPosts(id user.UserID) (*[]post.Post, error)
 	CreatePost(id user.UserID, content string) (*post.Post, error)
 	GetTimeline() (*[]post.Post, error)
 }
@@ -52,6 +53,15 @@ func (u *userUseCase) GetUser(id user.UserID) (*user.User, error) {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 	return user, nil
+}
+
+func (u *userUseCase) GetUserPosts(id user.UserID) (*[]post.Post, error) {
+	user, err := u.repository.FindUser(id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+	ps := user.Posts()
+	return &ps, nil
 }
 
 func (u *userUseCase) CreatePost(id user.UserID, content string) (*post.Post, error) {
