@@ -14,7 +14,7 @@ func NewPost(id PostID, authorID UserID, content string) (*Post, error) {
 	}
 
 	if len(content) > 256 {
-		return nil, fmt.Errorf("content must be 32 charactes or less")
+		return nil, fmt.Errorf("content must be 256 charactes or less")
 	}
 
 	p := &Post{
