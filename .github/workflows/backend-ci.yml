@@ -22,7 +22,7 @@ jobs:
         with:
           go-version: '1.19'
           cache: true
-          cache-dependency-path: go.sum
+          cache-dependency-path: backend/go.sum
 
   build:
     name: Build
