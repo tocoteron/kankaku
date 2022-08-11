@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+	"unicode/utf8"
+)
 
 type Post struct {
 	id       PostID
@@ -9,12 +12,8 @@ type Post struct {
 }
 
 func NewPost(id PostID, authorID UserID, content string) (*Post, error) {
-	if len(content) == 0 {
-		return nil, fmt.Errorf("content must be not empty")
-	}
-
-	if len(content) > 256 {
-		return nil, fmt.Errorf("content must be 256 charactes or less")
+	if err := validateContent(content); err != nil {
+		return nil, err
 	}
 
 	p := &Post{
@@ -40,4 +39,16 @@ func (p *Post) Content() string {
 
 func (p *Post) Equals(other Post) bool {
 	return p.id.Equals(other.id)
+}
+
+func validateContent(content string) error {
+	if utf8.RuneCountInString(content) == 0 {
+		return fmt.Errorf("content must be not empty")
+	}
+
+	if utf8.RuneCountInString(content) > 256 {
+		return fmt.Errorf("content must be 256 charactes or less")
+	}
+
+	return nil
 }
