@@ -28,6 +28,7 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - run: go build -v ./...
     
   test:
@@ -35,4 +36,5 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - run: go test -v ./...
