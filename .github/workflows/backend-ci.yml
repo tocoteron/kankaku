@@ -11,8 +11,8 @@ defaults:
     working-directory: backend
 
 jobs:
-  setup:
-    name: Set up
+  ci:
+    name: CI
     runs-on: ubuntu-latest
     steps:
       - name: Check out
@@ -25,18 +25,8 @@ jobs:
           cache: true
           cache-dependency-path: backend/go.sum
 
-  build:
-    name: Build
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: go build -v ./...
-    
-  test:
-    name: Test
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: go test -v ./...
+      - name: Build
+        run: go build -v ./...
+
+      - name: Test
+        run: go test -v ./...
