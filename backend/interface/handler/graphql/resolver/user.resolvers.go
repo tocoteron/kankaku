@@ -42,7 +42,7 @@ func (r *queryResolver) User(ctx context.Context, userID string) (*dto.User, err
 func (r *userResolver) Posts(ctx context.Context, obj *dto.User) ([]*dto.Post, error) {
 	ps, err := r.app.UserUseCase().GetUserPosts(model.NewUserID(obj.ID))
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user: %w", err)
+		return nil, fmt.Errorf("failed to get user posts: %w", err)
 	}
 	return dto.PostsFrom(ps), nil
 }
