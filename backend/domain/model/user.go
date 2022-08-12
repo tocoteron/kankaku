@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+	"unicode/utf8"
+)
 
 type User struct {
 	id    UserID
@@ -9,12 +12,8 @@ type User struct {
 }
 
 func NewUser(id UserID, name string, posts []Post) (*User, error) {
-	if len(name) == 0 {
-		return nil, fmt.Errorf("name must be not empty")
-	}
-
-	if len(name) > 32 {
-		return nil, fmt.Errorf("name must be 32 charactes or less")
+	if err := validateName(name); err != nil {
+		return nil, err
 	}
 
 	u := &User{
@@ -44,4 +43,16 @@ func (u *User) Equals(other User) bool {
 
 func (u *User) Post(p Post) {
 	u.posts = append(u.posts, p)
+}
+
+func validateName(name string) error {
+	if utf8.RuneCountInString(name) == 0 {
+		return fmt.Errorf("name must be not empty")
+	}
+
+	if utf8.RuneCountInString(name) > 32 {
+		return fmt.Errorf("name must be 32 charactes or less")
+	}
+
+	return nil
 }
