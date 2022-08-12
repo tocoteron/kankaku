@@ -49,11 +49,11 @@ func TestNewPost(t *testing.T) {
 		"normal content": {
 			id:       *id,
 			authorID: *authorID,
-			content:  "Hello",
+			content:  "Post",
 			want: &Post{
 				id:       *id,
 				authorID: *authorID,
-				content:  "Hello",
+				content:  "Post",
 			},
 		},
 	}

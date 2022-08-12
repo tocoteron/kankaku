@@ -45,11 +45,11 @@ func TestNewUser(t *testing.T) {
 		},
 		"normal name": {
 			id:    *id,
-			name:  "Test User",
+			name:  "User",
 			posts: []Post{},
 			want: &User{
 				id:    *id,
-				name:  "Test User",
+				name:  "User",
 				posts: []Post{},
 			},
 		},

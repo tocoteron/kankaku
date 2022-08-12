@@ -30,7 +30,7 @@ func TestPost(t *testing.T) {
 	}{
 		"empty context": {
 			ctx:     context.Background(),
-			content: "test content",
+			content: "Post",
 			want:    nil,
 		},
 		"non-existent user": {
@@ -38,7 +38,7 @@ func TestPost(t *testing.T) {
 				context.Background(),
 				&mycontext.UserContext{},
 			),
-			content: "test content",
+			content: "Post",
 			want:    nil,
 		},
 		"existing user": {
