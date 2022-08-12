@@ -8,6 +8,12 @@ import (
 )
 
 func TestNewPost(t *testing.T) {
+	id, _ := NewPostID("Post ID")
+	assert.NotNil(t, id)
+
+	authorID, _ := NewUserID("Author ID")
+	assert.NotNil(t, authorID)
+
 	tooLongContent := test.RandomString(257)
 	maxLenContent := test.RandomString(256)
 
@@ -18,34 +24,34 @@ func TestNewPost(t *testing.T) {
 		want     *Post
 	}{
 		"empty content": {
-			id:       NewPostID("Post0"),
-			authorID: NewUserID("User0"),
+			id:       *id,
+			authorID: *authorID,
 			content:  "",
 			want:     nil,
 		},
 		"too long content": {
-			id:       NewPostID("Post1"),
-			authorID: NewUserID("User1"),
+			id:       *id,
+			authorID: *authorID,
 			content:  tooLongContent,
 			want:     nil,
 		},
 		"max length content": {
-			id:       NewPostID("Post2"),
-			authorID: NewUserID("User2"),
+			id:       *id,
+			authorID: *authorID,
 			content:  maxLenContent,
 			want: &Post{
-				id:       NewPostID("Post2"),
-				authorID: NewUserID("User2"),
+				id:       *id,
+				authorID: *authorID,
 				content:  maxLenContent,
 			},
 		},
 		"normal content": {
-			id:       NewPostID("Post3"),
-			authorID: NewUserID("User3"),
+			id:       *id,
+			authorID: *authorID,
 			content:  "Hello",
 			want: &Post{
-				id:       NewPostID("Post3"),
-				authorID: NewUserID("User3"),
+				id:       *id,
+				authorID: *authorID,
 				content:  "Hello",
 			},
 		},

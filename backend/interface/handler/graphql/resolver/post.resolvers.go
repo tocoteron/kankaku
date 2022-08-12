@@ -20,7 +20,12 @@ func (r *mutationResolver) Post(ctx context.Context, content string) (*dto.Post,
 		return nil, fmt.Errorf("failed to get user context: %w", err)
 	}
 
-	p, err := r.app.UserUseCase().CreatePost(model.NewUserID(uc.ID), content)
+	uid, err := model.NewUserID(uc.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user id: %w", err)
+	}
+
+	p, err := r.app.UserUseCase().CreatePost(*uid, content)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create post: %w", err)
 	}

@@ -20,7 +20,12 @@ func (r *queryResolver) Me(ctx context.Context) (*dto.User, error) {
 		return nil, fmt.Errorf("failed to get user context: %w", err)
 	}
 
-	u, err := r.app.UserUseCase().GetUser(model.NewUserID(uc.ID))
+	id, err := model.NewUserID(uc.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user id: %w", err)
+	}
+
+	u, err := r.app.UserUseCase().GetUser(*id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
@@ -30,7 +35,12 @@ func (r *queryResolver) Me(ctx context.Context) (*dto.User, error) {
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, userID string) (*dto.User, error) {
-	u, err := r.app.UserUseCase().GetUser(model.NewUserID(userID))
+	id, err := model.NewUserID(userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user id: %w", err)
+	}
+
+	u, err := r.app.UserUseCase().GetUser(*id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
@@ -40,7 +50,12 @@ func (r *queryResolver) User(ctx context.Context, userID string) (*dto.User, err
 
 // Posts is the resolver for the posts field.
 func (r *userResolver) Posts(ctx context.Context, obj *dto.User) ([]*dto.Post, error) {
-	ps, err := r.app.UserUseCase().GetUserPosts(model.NewUserID(obj.ID))
+	id, err := model.NewUserID(obj.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user id: %w", err)
+	}
+
+	ps, err := r.app.UserUseCase().GetUserPosts(*id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user posts: %w", err)
 	}

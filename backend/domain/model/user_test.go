@@ -8,6 +8,9 @@ import (
 )
 
 func TestNewUser(t *testing.T) {
+	id, _ := NewUserID("User ID")
+	assert.NotNil(t, id)
+
 	tooLongName := test.RandomString(33)
 	maxLenName := test.RandomString(32)
 
@@ -18,33 +21,33 @@ func TestNewUser(t *testing.T) {
 		want  *User
 	}{
 		"empty name": {
-			id:    NewUserID("User0"),
+			id:    *id,
 			name:  "",
 			posts: []Post{},
 			want:  nil,
 		},
 		"too long name": {
-			id:    NewUserID("User1"),
+			id:    *id,
 			name:  tooLongName,
 			posts: []Post{},
 			want:  nil,
 		},
 		"max length name": {
-			id:    NewUserID("User2"),
+			id:    *id,
 			name:  maxLenName,
 			posts: []Post{},
 			want: &User{
-				id:    NewUserID("User2"),
+				id:    *id,
 				name:  maxLenName,
 				posts: []Post{},
 			},
 		},
 		"normal name": {
-			id:    NewUserID("User3"),
+			id:    *id,
 			name:  "Test User",
 			posts: []Post{},
 			want: &User{
-				id:    NewUserID("User3"),
+				id:    *id,
 				name:  "Test User",
 				posts: []Post{},
 			},

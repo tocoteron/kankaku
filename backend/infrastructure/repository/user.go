@@ -67,18 +67,28 @@ func (r *userInMemoryRepository) GetAllPosts() (*[]model.Post, error) {
 }
 
 func (r *userInMemoryRepository) NextUserID() (*model.UserID, error) {
-	id := model.NewUserID(uuid.New().String())
-	return &id, nil
+	id, err := model.NewUserID(uuid.New().String())
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user id: %w", err)
+	}
+
+	return id, nil
 }
 
 func (r *userInMemoryRepository) NextPostID() (*model.PostID, error) {
-	id := model.NewPostID(uuid.New().String())
-	return &id, nil
+	id, err := model.NewPostID(uuid.New().String())
+	if err != nil {
+		return nil, fmt.Errorf("failed to create post id: %w", err)
+	}
+	return id, nil
 }
 
 // Map User DTO to User domain model
 func (udto *userDTO) toUser() (*model.User, error) {
-	id := model.NewUserID(udto.id)
+	id, err := model.NewUserID(udto.id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user id: %w", err)
+	}
 
 	posts := []model.Post{}
 	for _, p := range udto.posts {
@@ -89,7 +99,7 @@ func (udto *userDTO) toUser() (*model.User, error) {
 		posts = append(posts, *pp)
 	}
 
-	u, err := model.NewUser(id, udto.name, posts)
+	u, err := model.NewUser(*id, udto.name, posts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create User model from User DTO: %w", err)
 	}
@@ -99,10 +109,17 @@ func (udto *userDTO) toUser() (*model.User, error) {
 
 // Map Post DTO to Post domain model
 func (pdto *postDTO) toPost() (*model.Post, error) {
-	id := model.NewPostID(pdto.id)
-	authorID := model.NewUserID(pdto.authorID)
+	id, err := model.NewPostID(pdto.id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create post id: %w", err)
+	}
 
-	p, err := model.NewPost(id, authorID, pdto.content)
+	authorID, err := model.NewUserID(pdto.authorID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create author id: %w", err)
+	}
+
+	p, err := model.NewPost(*id, *authorID, pdto.content)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Post model from Post DTO: %w", err)
 	}
