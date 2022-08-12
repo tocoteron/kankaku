@@ -7,21 +7,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/tocoteron/kankaku/domain/model"
-	"github.com/tocoteron/kankaku/interface/app"
 
 	mycontext "github.com/tocoteron/kankaku/interface/handler/context"
 	dto "github.com/tocoteron/kankaku/interface/handler/graphql/model"
 )
 
-func setupUserResolver() (*app.App, *Resolver) {
-	app := app.NewTestApp()
-	resolver := NewResolver(app)
-
-	return app, resolver
-}
-
 func TestMe(t *testing.T) {
-	app, r := setupUserResolver()
+	app, r := setupResolver()
 
 	me, _ := app.UserUseCase().CreateUser("test user")
 	require.NotNil(t, me)
@@ -59,7 +51,7 @@ func TestMe(t *testing.T) {
 }
 
 func TestUser(t *testing.T) {
-	app, r := setupUserResolver()
+	app, r := setupResolver()
 
 	u, _ := app.UserUseCase().CreateUser("test user")
 	require.NotNil(t, u)
@@ -90,7 +82,7 @@ func TestUser(t *testing.T) {
 }
 
 func TestPosts(t *testing.T) {
-	app, r := setupUserResolver()
+	app, r := setupResolver()
 
 	u, _ := app.UserUseCase().CreateUser("test user")
 	require.NotNil(t, u)
