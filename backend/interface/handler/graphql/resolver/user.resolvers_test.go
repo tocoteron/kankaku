@@ -56,3 +56,33 @@ func TestMe(t *testing.T) {
 		assert.Equal(t, tt.want, got)
 	}
 }
+
+func TestUser(t *testing.T) {
+	app, r := setup()
+	u, _ := app.UserUseCase().CreateUser("test")
+	require.NotNil(t, u)
+
+	tests := []struct {
+		ctx    context.Context
+		userID string
+		want   *dto.User
+	}{
+		{
+			// Can't get user because specified user id is invalid
+			context.Background(),
+			"",
+			nil,
+		},
+		{
+			// Can get user because specified user id is valid
+			context.Background(),
+			u.ID().String(),
+			dto.UserFrom(u),
+		},
+	}
+
+	for _, tt := range tests {
+		got, _ := r.Query().User(tt.ctx, tt.userID)
+		assert.Equal(t, tt.want, got)
+	}
+}
