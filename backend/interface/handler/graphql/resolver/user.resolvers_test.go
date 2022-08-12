@@ -22,7 +22,8 @@ func setup() (*app.App, *Resolver) {
 
 func TestMe(t *testing.T) {
 	app, r := setup()
-	me, _ := app.UserUseCase().CreateUser("test")
+
+	me, _ := app.UserUseCase().CreateUser("test user")
 	require.NotNil(t, me)
 
 	tests := []struct {
@@ -38,7 +39,7 @@ func TestMe(t *testing.T) {
 			// Can't get user because specified user id is invalid
 			mycontext.SetUserContext(
 				context.Background(),
-				&mycontext.UserContext{ID: "0"},
+				&mycontext.UserContext{},
 			),
 			nil,
 		},
@@ -60,7 +61,8 @@ func TestMe(t *testing.T) {
 
 func TestUser(t *testing.T) {
 	app, r := setup()
-	u, _ := app.UserUseCase().CreateUser("test")
+
+	u, _ := app.UserUseCase().CreateUser("test user")
 	require.NotNil(t, u)
 
 	tests := []struct {
@@ -91,7 +93,7 @@ func TestUser(t *testing.T) {
 func TestPosts(t *testing.T) {
 	app, r := setup()
 
-	u, _ := app.UserUseCase().CreateUser("test")
+	u, _ := app.UserUseCase().CreateUser("test user")
 	require.NotNil(t, u)
 
 	p, _ := app.UserUseCase().CreatePost(u.ID(), "test post")
