@@ -30,21 +30,18 @@ func TestMe(t *testing.T) {
 		ctx  context.Context
 		want *dto.User
 	}{
-		{
-			// Can't get user because context is empty
+		{ // Can't get user because context is empty
 			context.Background(),
 			nil,
 		},
-		{
-			// Can't get user because specified user id is invalid
+		{ // Can't get user because specified user id is invalid
 			mycontext.SetUserContext(
 				context.Background(),
 				&mycontext.UserContext{},
 			),
 			nil,
 		},
-		{
-			// Can get user because specified user id is valid
+		{ // Can get user because specified user id is valid
 			mycontext.SetUserContext(
 				context.Background(),
 				&mycontext.UserContext{ID: me.ID().String()},
@@ -70,14 +67,12 @@ func TestUser(t *testing.T) {
 		userID string
 		want   *dto.User
 	}{
-		{
-			// Can't get user because specified user id is invalid
+		{ // Can't get user because specified user id is invalid
 			context.Background(),
 			"",
 			nil,
 		},
-		{
-			// Can get user because specified user id is valid
+		{ // Can get user because specified user id is valid
 			context.Background(),
 			u.ID().String(),
 			dto.UserFrom(u),
@@ -104,14 +99,12 @@ func TestPosts(t *testing.T) {
 		obj  *dto.User
 		want []*dto.Post
 	}{
-		{
-			// Can't get posts because specified user id is invalid
+		{ // Can't get posts because specified user id is invalid
 			context.Background(),
 			&dto.User{},
 			nil,
 		},
-		{
-			// Can get posts because specified user id is valid
+		{ // Can get posts because specified user id is valid
 			context.Background(),
 			dto.UserFrom(u),
 			dto.PostsFrom(&[]model.Post{*p}),

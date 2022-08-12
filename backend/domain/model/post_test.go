@@ -3,42 +3,56 @@ package model
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/tocoteron/kankaku/test"
 )
 
 func TestNewPost(t *testing.T) {
+	tooLongContent := test.RandomString(257)
+	maxLenContent := test.RandomString(256)
+
 	tests := []struct {
 		id       PostID
 		authorID UserID
 		content  string
-		valid    bool
+		want     *Post
 	}{
-		{NewPostID("Post0"), NewUserID("User0"), "", false},                     // Empty content
-		{NewPostID("Post1"), NewUserID("User1"), test.RandomString(257), false}, // Too long content
-		{NewPostID("Post2"), NewUserID("User2"), test.RandomString(256), true},  // Max length content
-		{NewPostID("Post3"), NewUserID("User3"), "Hello", true},                 // Normal content
+		{ // Empty content
+			NewPostID("Post0"),
+			NewUserID("User0"),
+			"",
+			nil,
+		},
+		{ // Too long content
+			NewPostID("Post1"),
+			NewUserID("User1"),
+			tooLongContent,
+			nil,
+		},
+		{ // Max length content
+			NewPostID("Post2"),
+			NewUserID("User2"),
+			maxLenContent,
+			&Post{
+				id:       NewPostID("Post2"),
+				authorID: NewUserID("User2"),
+				content:  maxLenContent,
+			},
+		},
+		{ // Normal content
+			NewPostID("Post3"),
+			NewUserID("User3"),
+			"Hello",
+			&Post{
+				id:       NewPostID("Post3"),
+				authorID: NewUserID("User3"),
+				content:  "Hello",
+			},
+		},
 	}
 
 	for _, tt := range tests {
-		got, err := NewPost(tt.id, tt.authorID, tt.content)
-
-		if tt.valid {
-			if err != nil {
-				t.Errorf("failed to create new post: %s", err)
-			}
-			if !tt.id.Equals(got.ID()) {
-				t.Errorf("post id '%s' doesn't equal to '%s'", tt.id, got.ID())
-			}
-			if !tt.authorID.Equals(got.authorID) {
-				t.Errorf("author id '%s' doesn't equal to '%s'", tt.authorID, got.AuthorID())
-			}
-			if tt.content != got.Content() {
-				t.Errorf("content '%s' doesn't equal to '%s'", tt.content, got.Content())
-			}
-		}
-
-		if !tt.valid && got != nil {
-			t.Errorf("invalid post was created: %+v", got)
-		}
+		got, _ := NewPost(tt.id, tt.authorID, tt.content)
+		assert.Equal(t, tt.want, got)
 	}
 }
