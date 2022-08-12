@@ -13,7 +13,7 @@ import (
 	dto "github.com/tocoteron/kankaku/interface/handler/graphql/model"
 )
 
-func setup() (*app.App, *Resolver) {
+func setupUserResolver() (*app.App, *Resolver) {
 	app := app.NewTestApp()
 	resolver := NewResolver(app)
 
@@ -21,7 +21,7 @@ func setup() (*app.App, *Resolver) {
 }
 
 func TestMe(t *testing.T) {
-	app, r := setup()
+	app, r := setupUserResolver()
 
 	me, _ := app.UserUseCase().CreateUser("test user")
 	require.NotNil(t, me)
@@ -59,7 +59,7 @@ func TestMe(t *testing.T) {
 }
 
 func TestUser(t *testing.T) {
-	app, r := setup()
+	app, r := setupUserResolver()
 
 	u, _ := app.UserUseCase().CreateUser("test user")
 	require.NotNil(t, u)
@@ -90,7 +90,7 @@ func TestUser(t *testing.T) {
 }
 
 func TestPosts(t *testing.T) {
-	app, r := setup()
+	app, r := setupUserResolver()
 
 	u, _ := app.UserUseCase().CreateUser("test user")
 	require.NotNil(t, u)
