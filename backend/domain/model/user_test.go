@@ -4,12 +4,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tocoteron/kankaku/test"
 )
 
 func TestNewUser(t *testing.T) {
 	id, _ := NewUserID("User ID")
-	assert.NotNil(t, id)
+	require.NotNil(t, id)
 
 	tooLongName := test.RandomString(33)
 	maxLenName := test.RandomString(32)

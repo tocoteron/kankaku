@@ -4,15 +4,16 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tocoteron/kankaku/test"
 )
 
 func TestNewPost(t *testing.T) {
 	id, _ := NewPostID("Post ID")
-	assert.NotNil(t, id)
+	require.NotNil(t, id)
 
 	authorID, _ := NewUserID("Author ID")
-	assert.NotNil(t, authorID)
+	require.NotNil(t, authorID)
 
 	tooLongContent := test.RandomString(257)
 	maxLenContent := test.RandomString(256)
