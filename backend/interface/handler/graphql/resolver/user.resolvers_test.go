@@ -15,7 +15,7 @@ import (
 func TestMe(t *testing.T) {
 	app, r := setupResolver()
 
-	me, _ := app.UserUseCase().CreateUser("test user")
+	me, _ := app.UserUseCase().CreateUser("User")
 	require.NotNil(t, me)
 
 	tests := map[string]struct {
@@ -53,7 +53,7 @@ func TestMe(t *testing.T) {
 func TestUser(t *testing.T) {
 	app, r := setupResolver()
 
-	u, _ := app.UserUseCase().CreateUser("test user")
+	u, _ := app.UserUseCase().CreateUser("User")
 	require.NotNil(t, u)
 
 	tests := map[string]struct {
@@ -84,10 +84,10 @@ func TestUser(t *testing.T) {
 func TestPosts(t *testing.T) {
 	app, r := setupResolver()
 
-	u, _ := app.UserUseCase().CreateUser("test user")
+	u, _ := app.UserUseCase().CreateUser("User")
 	require.NotNil(t, u)
 
-	p, _ := app.UserUseCase().CreatePost(u.ID(), "test post")
+	p, _ := app.UserUseCase().CreatePost(u.ID(), "Post")
 	require.NotNil(t, p)
 
 	tests := map[string]struct {
