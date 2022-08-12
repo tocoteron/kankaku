@@ -20,17 +20,7 @@ func (r *queryResolver) Me(ctx context.Context) (*dto.User, error) {
 		return nil, fmt.Errorf("failed to get user context: %w", err)
 	}
 
-	id, err := model.NewUserID(uc.ID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create user id: %w", err)
-	}
-
-	u, err := r.app.UserUseCase().GetUser(*id)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get user: %w", err)
-	}
-
-	return dto.UserFrom(u), nil
+	return r.Query().User(ctx, uc.ID)
 }
 
 // User is the resolver for the user field.
