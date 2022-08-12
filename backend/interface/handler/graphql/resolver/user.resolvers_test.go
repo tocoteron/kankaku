@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/tocoteron/kankaku/interface/app"
 
 	mycontext "github.com/tocoteron/kankaku/interface/handler/context"
@@ -20,10 +21,8 @@ func setup() (*app.App, *Resolver) {
 
 func TestMe(t *testing.T) {
 	app, r := setup()
-	me, err := app.UserUseCase().CreateUser("test")
-	if err != nil {
-		t.Errorf("failed to create test user")
-	}
+	me, _ := app.UserUseCase().CreateUser("test")
+	require.NotNil(t, me)
 
 	tests := []struct {
 		ctx  context.Context
