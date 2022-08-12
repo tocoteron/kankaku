@@ -43,6 +43,7 @@ func (s *server) Run() {
 	// Set middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORS())
 
 	// Set auth routes
 	e.POST("/signup", signup(s.config.app, s.config.secret))
